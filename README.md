@@ -72,6 +72,4 @@ Send an array of sales records:
 - Returns `400 Bad Request` for invalid input.
 - Returns `500 Internal Server Error` for unexpected failures.
 
-## License
-This project is licensed under the MIT License.
 
