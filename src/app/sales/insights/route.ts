@@ -23,7 +23,6 @@ interface Insights {
  * - Checks if the GEMINI_API_KEY environment variable is set.
  * - Throws an error if the API key is missing.
  */
-
 if (!process.env.GEMINI_API_KEY) {
   throw new Error('GEMINI_API_KEY environment variable is not set');
 }
@@ -37,8 +36,18 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 export async function POST(req: NextRequest) {
   try {
+    /**
+     * Parse the request body as JSON.
+     * - Expects an array of sales records.
+     * - Explicitly type the body as an array of SaleRecord objects.
+     */
     const body: SaleRecord[] = await req.json();
 
+    /**
+     * Validate the input.
+     * - Checks if the input is an array and not empty.
+     * - Returns a 400 error if the input is invalid.
+     */
     if (!Array.isArray(body) || body.length === 0) {
       return NextResponse.json(
         { error: 'Invalid input: Expected an array of sales records' },
@@ -46,10 +55,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /**
+     * Calculate insights from the sales data.
+     * - totalSales: Sum of all sales amounts.
+     * - categorySales: Object to store sales amounts per category.
+     * - bestCategory: The category with the highest sales.
+     */
     const categorySales: Record<string, number> = {};
     let totalSales = 0;
 
     for (const sale of body) {
+      /**
+       * Validate each sale record.
+       * - Checks if the category is present and the amount is a non-negative number.
+       * - Returns a 400 error if any record is invalid.
+       */
       if (!sale.category || typeof sale.amount !== 'number' || sale.amount < 0) {
         return NextResponse.json(
           { error: 'Invalid sale record' },
